@@ -28,7 +28,7 @@ steps:
   displayName: Installing Profile for Snowflake
     
 - script: |
-    pip install dbt --user
+    pip install dbt==0.14.0 --user
     export PATH=$PATH:/home/vsts_azpcontainer/.local/bin
     cd snowflake_tpc_demo
     dbt compile
