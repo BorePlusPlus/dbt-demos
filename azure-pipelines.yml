@@ -13,31 +13,39 @@ container:
   image: python:3.7
   options: -u root
 
-steps:
-- task: InvokeRESTAPI@1
-  inputs:
-    connectionType: 'connectedServiceName'
-    serviceConnection: 'service-integ-data-proxy'
-    method: 'GET'
-    urlSuffix: '/__/manifest'
-    waitForCompletion: 'false'
-- task: DownloadSecureFile@1
-  name: SettingProfile
-  displayName: 'Downloading Profile for Snowflake'
-  inputs:
-    secureFile: 'snowflake-dbt-demo-profile.yml'
+jobs:
+- job: doit
+  pool: server
+  steps:
+  - task: InvokeRESTAPI@1
+    inputs:
+      connectionType: 'connectedServiceName'
+      serviceConnection: 'service-integ-data-proxy'
+      method: 'GET'
+      urlSuffix: '/__/manifest'
+      waitForCompletion: 'false'
 
-- script: |
-    echo Installing $(SettingProfile.secureFilePath) to the ~/.dbt...
-    mkdir ~/.dbt
-    cp $(SettingProfile.secureFilePath) ~/.dbt/profiles.yml
-  displayName: Installing Profile for Snowflake
-    
-- script: |
-    pip install dbt==0.14.0 --user
-    export PATH=$PATH:/home/vsts_azpcontainer/.local/bin
-    cd snowflake_tpc_demo
-    dbt compile
-    dbt test
-    dbt run
-  displayName: 'Compile, Test, and Run'
+  
+
+- job: otherone
+  steps:
+  - task: DownloadSecureFile@1
+    name: SettingProfile
+    displayName: 'Downloading Profile for Snowflake'
+    inputs:
+      secureFile: 'snowflake-dbt-demo-profile.yml'
+
+  - script: |
+      echo Installing $(SettingProfile.secureFilePath) to the ~/.dbt...
+      mkdir ~/.dbt
+      cp $(SettingProfile.secureFilePath) ~/.dbt/profiles.yml
+    displayName: Installing Profile for Snowflake
+      
+  - script: |
+      pip install dbt==0.14.0 --user
+      export PATH=$PATH:/home/vsts_azpcontainer/.local/bin
+      cd snowflake_tpc_demo
+      dbt compile
+      dbt test
+      dbt run
+    displayName: 'Compile, Test, and Run'
