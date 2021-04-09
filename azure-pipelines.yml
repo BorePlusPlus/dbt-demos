@@ -9,9 +9,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-container: 
-  image: python:3.7
-  options: -u root
+# container: 
+#   image: python:3.7
+#   options: -u root
 
 jobs:
 - job: doit
