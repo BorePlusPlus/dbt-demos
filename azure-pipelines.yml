@@ -14,7 +14,13 @@ container:
   options: -u root
 
 steps:
-
+- task: InvokeRESTAPI@1
+  inputs:
+    connectionType: 'connectedServiceName'
+    serviceConnection: 'service-integ-data-proxy'
+    method: 'GET'
+    urlSuffix: '/__/manifest'
+    waitForCompletion: 'false'
 - task: DownloadSecureFile@1
   name: SettingProfile
   displayName: 'Downloading Profile for Snowflake'
